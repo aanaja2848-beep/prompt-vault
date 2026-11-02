@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 Prompt Vault Unlimited</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --bg: #0f172a;
+    --bg-card: #1e293b;
+    --bg-input: #334155;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --border: #334155;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* ===== HEADER ===== */
+  header {
+    background: var(--bg-card);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  h1 {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  /* ===== BUTTONS ===== */
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  
+  button:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  
+  button.secondary { background: var(--bg-input); }
+  button.secondary:hover { background: #475569; }
+  
+  button.success { background: var(--success); }
+  button.success:hover { background: #059669; }
+  
+  button.danger { background: var(--danger); }
+  button.danger:hover { background: #dc2626; }
+  
+  button.warning { background: var(--warning); color: #000; }
+  button.warning:hover { background: #d97706; }
+  
+  button.icon-btn {
+    padding: 8px;
+    background: var(--bg-input);
+    font-size: 16px;
+  }
+  button.icon-btn:hover { background: #475569; }
+  
+  /* ===== SEARCH & FILTER ===== */
+  .toolbar {
+    padding: 16px 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  .tag-filter {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  
+  /* ===== MAIN CONTENT ===== */
+  main {
+    flex: 1;
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+  
+  .empty-state .icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  
+  .empty-state h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  
+  .empty-state p {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  
+  /* ===== PROMPT CARDS ===== */
+  .prompt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  
+  .prompt-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s;
+  }
+  
+  .prompt-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  }
+  
+  .prompt-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .prompt-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-word;
+    flex: 1;
+  }
+  
+  .prompt-star {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.4;
+    transition: all 0.2s;
+  }
+  
+  .prompt-star:hover { opacity: 1; transform: scale(1.2); }
+  .prompt-star.active { opacity: 1; }
+  
+  .prompt-preview {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-height: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  
+  .prompt-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  
+  .prompt-meta span {
+    background: var(--bg-input);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  
+  .prompt-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  
+  .tag {
+    background: var(--bg-input);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .tag:hover { background: var(--accent); color: white; }
+  
+  .prompt-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .prompt-actions button {
+    flex: 1;
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  
+  .modal-overlay.active { display: flex; }
+  
+  .modal {
+    background: var(--bg-card);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h2 {
+    font-size: 18px;
+  }
+  
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+  }
+  
+  .modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 100%;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    min-height: 300px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  
+  .char-counter {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  
+  .char-counter.warning { color: var(--warning); }
+  
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--success);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 2000;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+  
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--danger); }
+  .toast.warning { background: var(--warning); color: #000; }
+  
+  /* ===== CONFIRM DIALOG ===== */
+  .confirm-dialog {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+    padding: 16px;
+  }
+  
+  .confirm-dialog.active { display: flex; }
+  
+  .confirm-box {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    border: 1px solid var(--border);
+  }
+  
+  .confirm-box h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  .confirm-box p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  
+  .confirm-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    header { padding: 12px 16px; }
+    h1 { font-size: 16px; }
+    .toolbar { padding: 12px 16px; }
+    main { padding: 16px; }
+    .prompt-grid { grid-template-columns: 1fr; }
+    .modal-body textarea { min-height: 200px; }
+  }
+  
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-input); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>📚 Prompt Vault Unlimited</h1>
+  <div class="header-actions">
+    <button id="btnNew" class="success">➕ Prompt Baru</button>
+    <button id="btnExport" class="secondary">📥 Export</button>
+    <button id="btnImport" class="secondary">📤 Import</button>
+    <input type="file" id="fileImport" accept=".json" style="display:none;">
+  </div>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari prompt (judul, isi, tag)...">
+  <select id="tagFilter" class="tag-filter">
+    <option value="">Semua Tag</option>
+  </select>
+  <button id="btnClearAll" class="danger">🗑️ Hapus Semua</button>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div id="emptyState" class="empty-state">
+    <div class="icon">📝</div>
+    <h2>Belum ada prompt</h2>
+    <p>Klik "Prompt Baru" untuk mulai simpan prompt pertama kamu.</p>
+    <button id="btnNewEmpty" class="success">➕ Tambah Prompt Pertama</button>
+  </div>
+  <div id="promptGrid" class="prompt-grid"></div>
+</main>
+
+<!-- MODAL EDIT -->
+<div id="modalEdit" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Prompt Baru</h2>
+      <button class="icon-btn" id="btnCloseModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="inputTitle">Judul Prompt *</label>
+        <input type="text" id="inputTitle" placeholder="contoh: XAUUSD V7.1 SL-Proof">
+      </div>
+      <div class="form-group">
+        <label for="inputTags">Tags (pisah dengan koma)</label>
+        <input type="text" id="inputTags" placeholder="contoh: forex, ict, sl-proof, v7.1">
+      </div>
+      <div class="form-group">
+        <label for="inputContent">Isi Prompt (UNLIMITED TEXT)</label>
+        <textarea id="inputContent" placeholder="Paste prompt kamu di sini..."></textarea>
+        <div class="char-counter" id="charCounter">0 karakter</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="btnCancelModal" class="secondary">Batal</button>
+      <button id="btnSavePrompt" class="success">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VIEW -->
+<div id="modalView" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="viewTitle">Preview Prompt</h2>
+      <button class="icon-btn" id="btnCloseView">✕</button>
+    </div>
+    <div class="modal-body">
+      <pre id="viewContent" style="white-space: pre-wrap; word-wrap: break-word; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.6; background: var(--bg-input); padding: 16px; border-radius: 8px; overflow-x: auto;"></pre>
+    </div>
+    <div class="modal-footer">
+      <button id="btnCloseView2" class="secondary">Tutup</button>
+      <button id="btnCopyView" class="success">📋 Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div id="confirmDialog" class="confirm-dialog">
+  <div class="confirm-box">
+    <h3 id="confirmTitle">Konfirmasi</h3>
+    <p id="confirmMessage">Yakin?</p>
+    <div class="confirm-actions">
+      <button id="btnConfirmCancel" class="secondary">Batal</button>
+      <button id="btnConfirmOk" class="danger">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script>
+// ===== STATE =====
+let prompts = [];
+let editingId = null;
+let confirmCallback = null;
+
+// ===== STORAGE =====
+const STORAGE_KEY = 'prompt_vault_unlimited_v1';
+
+function loadPrompts() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    prompts = data ? JSON.parse(data) : [];
+  } catch (e) {
+    console.error('Load error:', e);
+    prompts = [];
+  }
+}
+
+function savePrompts() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prompts));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      showToast('Storage penuh! Export & hapus beberapa prompt.', 'error');
+    } else {
+      showToast('Gagal simpan: ' + e.message, 'error');
+    }
+  }
+}
+
+// ===== TOAST =====
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type + ' show';
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ===== CONFIRM =====
+function showConfirm(title, message, callback) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  document.getElementById('confirmDialog').classList.add('active');
+  confirmCallback = callback;
+}
+
+document.getElementById('btnConfirmCancel').onclick = () => {
+  document.getElementById('confirmDialog').classList.remove('active');
+  confirmCallback = null;
+};
+
+document.getElementById('btnConfirmOk').onclick = () => {
+  if (confirmCallback) confirmCallback();
+  document.getElementById('confirmDialog').classList.remove('active');
+  confirmCallback = null;
+};
+
+// ===== RENDER =====
+function renderPrompts() {
+  const grid = document.getElementById('promptGrid');
+  const empty = document.getElementById('emptyState');
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const tagFilter = document.getElementById('tagFilter').value;
+
+  let filtered = prompts.slice();
+
+  if (search) {
+    filtered = filtered.filter(p =>
+      p.title.toLowerCase().includes(search) ||
+      p.content.toLowerCase().includes(search) ||
+      p.tags.some(t => t.toLowerCase().includes(search))
+    );
+  }
+
+  if (tagFilter) {
+    filtered = filtered.filter(p => p.tags.includes(tagFilter));
+  }
+
+  // Sort: star dulu, lalu terbaru
+  filtered.sort((a, b) => {
+    if (a.starred !== b.starred) return b.starred - a.starred;
+    return b.updatedAt - a.updatedAt;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    if (prompts.length > 0) {
+      empty.querySelector('h2').textContent = 'Tidak ada hasil';
+      empty.querySelector('p').textContent = 'Coba kata kunci lain atau reset filter.';
+      document.getElementById('btnNewEmpty').style.display = 'none';
+    } else {
+      empty.querySelector('h2').textContent = 'Belum ada prompt';
+      empty.querySelector('p').textContent = 'Klik "Prompt Baru" untuk mulai simpan prompt pertama kamu.';
+      document.getElementById('btnNewEmpty').style.display = 'inline-flex';
+    }
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.innerHTML = '';
+
+  filtered.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'prompt-card';
+
+    const preview = p.content.substring(0, 200) + (p.content.length > 200 ? '...' : '');
+    const charCount = p.content.length.toLocaleString('id-ID');
+
+    card.innerHTML = `
+      <div class="prompt-card-header">
+        <div class="prompt-title">${escapeHtml(p.title)}</div>
+        <button class="prompt-star ${p.starred ? 'active' : ''}" data-action="star" data-id="${p.id}" title="${p.starred ? 'Hapus dari favorit' : 'Tambah ke favorit'}">
+          ${p.starred ? '⭐' : '☆'}
+        </button>
+      </div>
+      <div class="prompt-preview">${escapeHtml(preview)}</div>
+      <div class="prompt-tags">
+        ${p.tags.map(t => `<span class="tag" data-action="filtertag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`).join('')}
+      </div>
+      <div class="prompt-meta">
+        <span>📝 ${charCount} char</span>
+        <span>🕐 ${formatDate(p.updatedAt)}</span>
+      </div>
+      <div class="prompt-actions">
+        <button class="success" data-action="copy" data-id="${p.id}">📋 Copy</button>
+        <button class="secondary" data-action="view" data-id="${p.id}">👁️ Lihat</button>
+        <button class="secondary" data-action="edit" data-id="${p.id}">✏️ Edit</button>
+        <button class="danger" data-action="delete" data-id="${p.id}">🗑️</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return 'baru saja';
+  if (diff < 3600000) return Math.floor(diff/60000) + ' menit lalu';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' jam lalu';
+  return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+// ===== TAG FILTER =====
+function updateTagFilter() {
+  const select = document.getElementById('tagFilter');
+  const current = select.value;
+  const allTags = new Set();
+  prompts.forEach(p => p.tags.forEach(t => allTags.add(t)));
+  const sorted = Array.from(allTags).sort();
+  
+  select.innerHTML = '<option value="">Semua Tag</option>' +
+    sorted.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+  
+  if (sorted.includes(current)) select.value = current;
+}
+
+// ===== MODAL EDIT =====
+function openEditModal(prompt = null) {
+  editingId = prompt ? prompt.id : null;
+  document.getElementById('modalTitle').textContent = prompt ? 'Edit Prompt' : 'Prompt Baru';
+  document.getElementById('inputTitle').value = prompt ? prompt.title : '';
+  document.getElementById('inputTags').value = prompt ? prompt.tags.join(', ') : '';
+  document.getElementById('inputContent').value = prompt ? prompt.content : '';
+  updateCharCounter();
+  document.getElementById('modalEdit').classList.add('active');
+  setTimeout(() => document.getElementById('inputTitle').focus(), 100);
+}
+
+function closeEditModal() {
+  document.getElementById('modalEdit').classList.remove('active');
+  editingId = null;
+}
+
+function updateCharCounter() {
+  const len = document.getElementById('inputContent').value.length;
+  const counter = document.getElementById('charCounter');
+  counter.textContent = len.toLocaleString('id-ID') + ' karakter (unlimited)';
+  counter.className = 'char-counter';
+}
+
+function savePrompt() {
+  const title = document.getElementById('inputTitle').value.trim();
+  const content = document.getElementById('inputContent').value;
+  const tagsRaw = document.getElementById('inputTags').value;
+  
+  if (!title) {
+    showToast('Judul wajib diisi!', 'error');
+    document.getElementById('inputTitle').focus();
+    return;
+  }
+  
+  if (!content.trim()) {
+    showToast('Isi prompt wajib diisi!', 'error');
+    document.getElementById('inputContent').focus();
+    return;
+  }
+  
+  const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t).map(t => t.toLowerCase());
+  const now = Date.now();
+  
+  if (editingId) {
+    const idx = prompts.findIndex(p => p.id === editingId);
+    if (idx !== -1) {
+      prompts[idx] = { ...prompts[idx], title, content, tags, updatedAt: now };
+      showToast('Prompt diupdate!');
+    }
+  } else {
+    prompts.push({
+      id: 'p_' + now + '_' + Math.random().toString(36).substr(2, 9),
+      title, content, tags,
+      starred: false,
+      createdAt: now,
+      updatedAt: now
+    });
+    showToast('Prompt disimpan!');
+  }
+  
+  savePrompts();
+  updateTagFilter();
+  renderPrompts();
+  closeEditModal();
+}
+
+// ===== MODAL VIEW =====
+function openViewModal(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('viewTitle').textContent = p.title;
+  document.getElementById('viewContent').textContent = p.content;
+  document.getElementById('modalView').classList.add('active');
+  document.getElementById('btnCopyView').onclick = () => copyText(p.content);
+}
+
+function closeViewModal() {
+  document.getElementById('modalView').classList.remove('active');
+}
+
+// ===== COPY =====
+async function copyText(text) {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    showToast('✅ Prompt dicopy ke clipboard!');
+  } catch (e) {
+    showToast('Gagal copy: ' + e.message, 'error');
+  }
+}
+
+// ===== EXPORT =====
+function exportPrompts() {
+  if (prompts.length === 0) {
+    showToast('Tidak ada prompt untuk export', 'warning');
+    return;
+  }
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    total: prompts.length,
+    prompts: prompts
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `prompt-vault-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`Export ${prompts.length} prompt berhasil!`);
+}
+
+// ===== IMPORT =====
+function importPrompts(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      let imported = [];
+      if (Array.isArray(data)) imported = data;
+      else if (data.prompts && Array.isArray(data.prompts)) imported = data.prompts;
+      else throw new Error('Format tidak valid');
+      
+      let added = 0;
+      imported.forEach(p => {
+        if (!p.title || !p.content) return;
+        const exists = prompts.some(x => x.title === p.title && x.content === p.content);
+        if (exists) return;
+        prompts.push({
+          id: 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+          title: p.title,
+          content: p.content,
+          tags: Array.isArray(p.tags) ? p.tags.map(t => String(t).toLowerCase()) : [],
+          starred: !!p.starred,
+          createdAt: p.createdAt || Date.now(),
+          updatedAt: Date.now()
+        });
+        added++;
+      });
+      
+      savePrompts();
+      updateTagFilter();
+      renderPrompts();
+      showToast(`Import berhasil! ${added} prompt ditambahkan.`);
+    } catch (err) {
+      showToast('Gagal import: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ===== EVENT LISTENERS =====
+document.getElementById('btnNew').onclick = () => openEditModal();
+document.getElementById('btnNewEmpty').onclick = () => openEditModal();
+document.getElementById('btnCloseModal').onclick = closeEditModal;
+document.getElementById('btnCancelModal').onclick = closeEditModal;
+document.getElementById('btnSavePrompt').onclick = savePrompt;
+document.getElementById('btnCloseView').onclick = closeViewModal;
+document.getElementById('btnCloseView2').onclick = closeViewModal;
+document.getElementById('btnExport').onclick = exportPrompts;
+document.getElementById('btnImport').onclick = () => document.getElementById('fileImport').click();
+document.getElementById('fileImport').onchange = (e) => {
+  if (e.target.files[0]) {
+    importPrompts(e.target.files[0]);
+    e.target.value = '';
+  }
+};
+
+document.getElementById('btnClearAll').onclick = () => {
+  if (prompts.length === 0) {
+    showToast('Tidak ada prompt', 'warning');
+    return;
+  }
+  showConfirm(
+    'Hapus Semua Prompt?',
+    `Yakin hapus ${prompts.length} prompt? Tindakan ini tidak bisa dibatalkan. Export dulu jika perlu backup.`,
+    () => {
+      prompts = [];
+      savePrompts();
+      updateTagFilter();
+      renderPrompts();
+      showToast('Semua prompt dihapus');
+    }
+  );
+};
+
+document.getElementById('searchInput').oninput = renderPrompts;
+document.getElementById('tagFilter').onchange = renderPrompts;
+document.getElementById('inputContent').oninput = updateCharCounter;
+
+// Event delegation untuk card buttons
+document.getElementById('promptGrid').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (btn) {
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+    if (action === 'copy') {
+      const p = prompts.find(x => x.id === id);
+      if (p) copyText(p.content);
+    } else if (action === 'view') {
+      openViewModal(id);
+    } else if (action === 'edit') {
+      const p = prompts.find(x => x.id === id);
+      if (p) openEditModal(p);
+    } else if (action === 'delete') {
+      const p = prompts.find(x => x.id === id);
+      if (!p) return;
+      showConfirm(
+        'Hapus Prompt?',
+        `Yakin hapus "${p.title}"?`,
+        () => {
+          prompts = prompts.filter(x => x.id !== id);
+          savePrompts();
+          updateTagFilter();
+          renderPrompts();
+          showToast('Prompt dihapus');
+        }
+      );
+    } else if (action === 'star') {
+      const p = prompts.find(x => x.id === id);
+      if (p) {
+        p.starred = !p.starred;
+        p.updatedAt = Date.now();
+        savePrompts();
+        renderPrompts();
+      }
+    }
+    return;
+  }
+  
+  const tagEl = e.target.closest('.tag');
+  if (tagEl && tagEl.dataset.action === 'filtertag') {
+    document.getElementById('tagFilter').value = tagEl.dataset.tag;
+    renderPrompts();
+  }
+});
+
+// Close modal on backdrop click
+document.getElementById('modalEdit').onclick = (e) => {
+  if (e.target.id === 'modalEdit') closeEditModal();
+};
+document.getElementById('modalView').onclick = (e) => {
+  if (e.target.id === 'modalView') closeViewModal();
+};
+document.getElementById('confirmDialog').onclick = (e) => {
+  if (e.target.id === 'confirmDialog') {
+    document.getElementById('confirmDialog').classList.remove('active');
+    confirmCallback = null;
+  }
+};
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+    e.preventDefault();
+    openEditModal();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+  if (e.key === 'Escape') {
+    closeEditModal();
+    closeViewModal();
+    document.getElementById('confirmDialog').classList.remove('active');
+    confirmCallback = null;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && document.getElementById('modalEdit').classList.contains('active')) {
+    e.preventDefault();
+    savePrompt();
+  }
+});
+
+// ===== INIT =====
+loadPrompts();
+updateTagFilter();
+renderPrompts();
+
+console.log('%c📚 Prompt Vault Unlimited Ready!', 'color:#3b82f6;font-size:16px;font-weight:bold');
+console.log('Shortcuts: Ctrl+N (baru), Ctrl+F (cari), Ctrl+Enter (simpan), Esc (tutup)');
+</script>
+
+</body>
+</html>
